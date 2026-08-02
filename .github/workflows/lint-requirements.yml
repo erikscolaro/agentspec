@@ -1,0 +1,23 @@
+name: Lint Requirements
+
+on:
+  push:
+    paths:
+      - "requirements/**"
+      - "tools/lint_requirements.py"
+      - ".github/workflows/lint-requirements.yml"
+  pull_request:
+    paths:
+      - "requirements/**"
+      - "tools/lint_requirements.py"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - run: python tools/lint_requirements.py
