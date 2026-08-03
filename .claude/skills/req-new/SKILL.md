@@ -10,7 +10,7 @@ description: Create a new requirement compliant with the repo methodology from a
 3. ID: module prefix + first free number. Never reuse numbers, not even from deprecated REQs.
 4. Fill in the block:
    - Atomic description: if the Then would verify more than 2-3 unrelated outcomes, propose two separate REQs.
-   - Each scenario = one Given/When/Then block, with a single When.
+   - Each scenario = one named block (`**Scenario: <behavior>_<outcome>**`) with a single When; the name becomes the test function name.
    - Edge cases always present: if not deducible from the request, ask instead of inventing.
 5. Vague references to other requirements → entry in `pending_refs`, in natural language. Do not invent IDs in `depends_on`.
 6. `status: draft`. Omit empty fields. Changelog: today's date, `created (draft)`.

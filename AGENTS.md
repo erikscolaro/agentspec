@@ -18,7 +18,7 @@ Before writing any code, in order:
 ## Conventions
 
 - **Requirements language: English** <!-- change here (e.g. Italian). REQ prose, reviewer reports and changelogs follow this setting. Chat language is whatever the user uses. -->
-- Test names: descriptive, pattern `<behavior>_<outcome>` (e.g. `upload_rejects_oversize_file`).
+- Acceptance criteria use **named scenarios**: `**Scenario: <behavior>_<outcome>**` (e.g. `upload_rejects_oversize_file`). The scenario name IS the test function name.
 - **Traceability comment**: the function/handler implementing a requirement carries a comment `Implements: REQ-XXX-NNN` (language-appropriate comment syntax — cross-language convention, checked by the lint). Keep `files.src` in sync.
 - Changelog dates: ISO `YYYY-MM-DD`. Changelog trimmed to the last 5 entries: full history lives in git.
 - Empty YAML fields (`[]`): **omitted**. The lint treats absent as empty.
@@ -82,7 +82,7 @@ Agents other than Claude Code: skills and subagents are plain markdown files und
 ## Test guidelines
 
 1. A failing assertion is fixed by correcting the code or reporting a problem in the requirement — never by weakening the assertion.
-2. Each Given/When/Then scenario of a REQ maps to one test function; Given/When/Then appear as structuring comments inside it.
+2. Each named scenario of a REQ maps to one test function with the same name; Given/When/Then appear as structuring comments inside it.
 3. Before proposing `status: tested`, run the module's full suite (slow tests included), not just the test of the REQ being worked on.
 4. If a REQ has `depends_on`, its tests cover at least one dependency-related case (e.g. unauthenticated request → 401), not just the happy path.
 5. If an existing test contradicts newly requested behavior, stop and report — do not silently modify the old test.

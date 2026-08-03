@@ -28,11 +28,13 @@ pending_refs: []               # natural-language references; the AI resolves th
 
 **Acceptance criteria**
 
+**Scenario: <behavior>_<outcome>**  <!-- the scenario name IS the test function name -->
 - Given <!-- system state before the action -->
 - When <!-- ONE action only -->
 - Then <!-- observable, verifiable outcome -->
 
-<!-- More scenarios = more Given/When/Then blocks. Each scenario → one test function. -->
+<!-- More scenarios = more named blocks. Each scenario → one test function with the same name.
+     Dependency-coverage scenarios can note it inline: **Scenario: x** *(covers REQ-AUTH-003)* -->
 
 **Edge cases**
 
