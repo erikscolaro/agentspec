@@ -17,6 +17,7 @@ For each REQ in `draft` state, evaluate:
 4. **Edge cases** — which invalid inputs, limits or error conditions are missing relative to the described behavior?
 5. **Consistency** — does it contradict the module's invariant rules, the cross-cutting invariants in 00_overview, or other REQs in the same file? Cite the involved IDs.
 6. **Dependencies** — does the behavior presuppose auth or other modules without declaring it in `depends_on`/`pending_refs`? Is the routes table consistent with the REQ?
+7. **Heading level** — is the REQ written as a level-3 heading (`### REQ-ID`) nested under `## Requirements`? The lint enforces this (E13), but flag it if you notice it broken.
 
 Output: one report per REQ with a verdict (**approvable** / **needs revision**) and pointed observations, each with a concrete correction proposal. Write the report in the requirements language set in AGENTS.md (Conventions).
 

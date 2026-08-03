@@ -30,7 +30,7 @@ requirements/
   agents/req-reviewer.md  Read-only subagent for draft review (Sonnet)
   settings.json           Hook: automatic lint after edits to requirements/
 tools/
-  lint_requirements.py    Structural validator (12 errors + 3 warnings)
+  lint_requirements.py    Structural validator (13 errors + 3 warnings)
   hooks/lint_on_edit.py   Hook script
 .github/workflows/        CI running the lint on push/PR
 ```
@@ -56,3 +56,7 @@ The AI proposes status transitions, the human confirms. `tested` requires `files
 - On conflict (between requirements, or between an existing test and new behavior) the AI **stops and reports**
 - Cross references are written in natural language in `pending_refs` and resolved into canonical IDs with `/req-resolve`
 - Implementing code carries an `Implements: REQ-XXX-NNN` comment — cross-language traceability, verified by the lint
+
+## Making it a GitHub template
+
+After pushing: **Settings → General → Template repository** ✓

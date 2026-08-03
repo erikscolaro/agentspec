@@ -1,7 +1,8 @@
 <!-- Skeleton of a single requirement: copy it into the "Requirements" section
-     of the module file. The heading MUST match the id field. -->
+     of the module file. The heading MUST match the id field AND be a level-3
+     heading (###), nested under the module's "## Requirements" section. -->
 
-## REQ-XXX-001
+### REQ-XXX-001
 
 ```yaml
 id: REQ-XXX-001                # prefix = module (e.g. REQ-UPLOAD-001), number never reused

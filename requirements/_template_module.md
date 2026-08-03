@@ -64,4 +64,5 @@ depends_on_modules: []         # e.g. [auth]
 
 ## Requirements
 
-<!-- One block per REQ, copied from _template_req.md. Progressive IDs, never reused. -->
+<!-- One block per REQ, copied from _template_req.md. Progressive IDs, never reused.
+     Each REQ is a level-3 heading (###) nested under this level-2 (##) section. -->

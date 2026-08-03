@@ -51,7 +51,7 @@ Manages authentication and authorization: token issuance and verification, roles
 
 ## Requirements
 
-## REQ-AUTH-001
+### REQ-AUTH-001
 
 ```yaml
 id: REQ-AUTH-001
@@ -87,7 +87,7 @@ Deactivated user → 403, no token issued. Rate limiting on failed attempts (thr
 
 - 2026-08-02: created (draft)
 
-## REQ-AUTH-002
+### REQ-AUTH-002
 
 ```yaml
 id: REQ-AUTH-002
@@ -124,7 +124,7 @@ Expired refresh token → 401 without cascading revocation. Malformed token → 
 
 - 2026-08-02: created (draft)
 
-## REQ-AUTH-003
+### REQ-AUTH-003
 
 ```yaml
 id: REQ-AUTH-003

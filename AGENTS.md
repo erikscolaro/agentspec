@@ -18,6 +18,7 @@ Before writing any code, in order:
 ## Conventions
 
 - **Requirements language: English** <!-- change here (e.g. Italian). REQ prose, reviewer reports and changelogs follow this setting. Chat language is whatever the user uses. -->
+- **Heading hierarchy**: `#` document title only, `##` major sections (Purpose, Requirements, Vision...), `###` individual REQ — always nested under `## Requirements` (or `## Cross-cutting invariants` in the overview). Nothing below REQ subsections becomes a heading (Description, Scenario, Edge cases stay bold text).
 - Acceptance criteria use **named scenarios**: `**Scenario: <behavior>_<outcome>**` (e.g. `upload_rejects_oversize_file`). The scenario name IS the test function name.
 - **Traceability comment**: the function/handler implementing a requirement carries a comment `Implements: REQ-XXX-NNN` (language-appropriate comment syntax — cross-language convention, checked by the lint). Keep `files.src` in sync.
 - Changelog dates: ISO `YYYY-MM-DD`. Changelog trimmed to the last 5 entries: full history lives in git.
