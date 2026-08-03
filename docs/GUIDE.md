@@ -54,7 +54,7 @@ The AI may *propose* `implemented → tested` only after running the module's fu
 
 ## The lint
 
-It validates structure, not content (content is the review's job): unique well-formed IDs, `depends_on` pointing to existing REQs, allowed statuses, `tested` with linked tests, paths in `files.*` actually existing, forgotten `pending_refs`, and code under the modules' `owner_dir` referencing non-existent REQs (typos in `Implements:` comments).
+It validates structure, not content (content is the review's job): unique well-formed IDs, `depends_on` pointing to existing REQs, allowed statuses, `tested` with linked tests, paths in `files.*` actually existing, forgotten `pending_refs`, code under the modules' `owner_dir` referencing non-existent REQs (typos in `Implements:` comments), REQ headings at the wrong level, and REQ headings missing a descriptive title.
 
 It runs in three places, ordered by distance from you:
 

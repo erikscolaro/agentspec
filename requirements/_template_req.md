@@ -1,8 +1,9 @@
 <!-- Skeleton of a single requirement: copy it into the "Requirements" section
-     of the module file. The heading MUST match the id field AND be a level-3
-     heading (###), nested under the module's "## Requirements" section. -->
+     of the module file. The heading MUST match the id field, be a level-3
+     heading (###) nested under "## Requirements", and carry a short descriptive
+     title after the id (the lint warns if missing). -->
 
-### REQ-XXX-001
+### REQ-XXX-001 - Short descriptive title
 
 ```yaml
 id: REQ-XXX-001                # prefix = module (e.g. REQ-UPLOAD-001), number never reused
@@ -29,13 +30,16 @@ pending_refs: []               # natural-language references; the AI resolves th
 
 **Acceptance criteria**
 
-**Scenario: <behavior>_<outcome>**  <!-- the scenario name IS the test function name -->
-- Given <!-- system state before the action -->
-- When <!-- ONE action only -->
-- Then <!-- observable, verifiable outcome -->
+<!-- "Acceptance criteria" is the section label; each Scenario is a blockquote so it
+     reads visually distinct (indented, bordered) from the label above it. -->
 
-<!-- More scenarios = more named blocks. Each scenario → one test function with the same name.
-     Dependency-coverage scenarios can note it inline: **Scenario: x** *(covers REQ-AUTH-003)* -->
+> **Scenario: <behavior>_<outcome>**  <!-- the scenario name IS the test function name -->
+> - Given <!-- system state before the action -->
+> - When <!-- ONE action only -->
+> - Then <!-- observable, verifiable outcome -->
+
+<!-- More scenarios = more blockquoted blocks. Each scenario → one test function with the same name.
+     Dependency-coverage scenarios can note it inline: > **Scenario: x** *(covers REQ-AUTH-003)* -->
 
 **Edge cases**
 

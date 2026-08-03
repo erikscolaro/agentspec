@@ -26,7 +26,7 @@
 <!-- Rules valid in every module, written ONCE here and never repeated in individual REQs.
      If an invariant must be referenceable via depends_on, give it an ID as in the example. -->
 
-### REQ-GLOBAL-001
+### REQ-GLOBAL-001 - Entity identifiers are UUID v4
 
 ```yaml
 id: REQ-GLOBAL-001

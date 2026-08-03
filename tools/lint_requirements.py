@@ -18,6 +18,7 @@ Mechanically validates the methodology rules:
   W1  unresolved pending_refs
   W2  file with REQs but no module header
   W3  deprecated REQ referenced in depends_on of an active REQ
+  W4  REQ heading has no descriptive title (### REQ-ID - Title)
 
 Exit code 1 on errors, 0 on warnings only or clean.
 Files prefixed with "_" are ignored. 00_overview.md does not require a module header.
@@ -38,7 +39,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 REQ_DIR = REPO_ROOT / "requirements"
 
 ID_RE = re.compile(r"^REQ-[A-Z0-9]+-\d+$")
-HEADING_RE = re.compile(r"^(#{1,4})\s+(REQ-[A-Z0-9]+-\d+)\s*$", re.MULTILINE)
+HEADING_RE = re.compile(r"^(#{1,4})\s+(REQ-[A-Z0-9]+-\d+)(?:\s*[-–—]\s*(.+?))?\s*$", re.MULTILINE)
 FENCE_RE = re.compile(r"^```yaml\s*\n(.*?)^```\s*$", re.MULTILINE | re.DOTALL)
 REQ_REF_RE = re.compile(r"REQ-[A-Z0-9]+-\d+")
 
@@ -61,7 +62,10 @@ def line_of(text: str, pos: int) -> int:
 def parse_file(path: Path, problems: list) -> tuple[dict | None, list[dict]]:
     """Returns (module_header, [req]) for a .md file."""
     text = path.read_text(encoding="utf-8")
-    headings = [(m.start(), len(m.group(1)), m.group(2)) for m in HEADING_RE.finditer(text)]
+    headings = [
+        (m.start(), len(m.group(1)), m.group(2), (m.group(3) or "").strip())
+        for m in HEADING_RE.finditer(text)
+    ]
     module_header = None
     reqs = []
 
@@ -79,8 +83,14 @@ def parse_file(path: Path, problems: list) -> tuple[dict | None, list[dict]]:
         if "id" in data:
             # REQ heading immediately preceding the block
             prev = [h for h in headings if h[0] < m.start()]
-            heading_level, heading_id = (prev[-1][1], prev[-1][2]) if prev else (None, None)
-            reqs.append({"data": data, "loc": loc, "heading_id": heading_id, "heading_level": heading_level})
+            if prev:
+                _, heading_level, heading_id, heading_title = prev[-1]
+            else:
+                heading_level = heading_id = heading_title = None
+            reqs.append({
+                "data": data, "loc": loc,
+                "heading_id": heading_id, "heading_level": heading_level, "heading_title": heading_title,
+            })
         elif "module" in data and module_header is None:
             module_header = {"data": data, "loc": loc}
 
@@ -122,6 +132,8 @@ def main() -> int:
                 problems.append(("E2", loc, f"heading '{r['heading_id']}' ≠ id '{rid}'"))
             if r["heading_level"] is not None and r["heading_level"] != REQ_HEADING_LEVEL:
                 problems.append(("E13", loc, f"{rid}: heading is h{r['heading_level']}, expected h{REQ_HEADING_LEVEL} (###)"))
+            if not r["heading_title"]:
+                problems.append(("W4", loc, f"{rid}: heading has no descriptive title (### {rid} - Title)"))
             if rid in all_reqs:
                 problems.append(("E4", loc, f"duplicate id '{rid}' (already in {all_reqs[rid]['loc']})"))
                 continue

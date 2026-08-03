@@ -30,7 +30,7 @@ requirements/
   agents/req-reviewer.md  Read-only subagent for draft review (Sonnet)
   settings.json           Hook: automatic lint after edits to requirements/
 tools/
-  lint_requirements.py    Structural validator (13 errors + 3 warnings)
+  lint_requirements.py    Structural validator (13 errors + 4 warnings)
   hooks/lint_on_edit.py   Hook script
 .github/workflows/        CI running the lint on push/PR
 ```
