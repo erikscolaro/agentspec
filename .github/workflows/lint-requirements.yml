@@ -21,3 +21,10 @@ jobs:
           python-version: "3.12"
       - run: pip install pyyaml
       - run: python tools/lint_requirements.py
+      - run: python tools/gen_auth_tests.py --check
+      - name: requirements/.index.md is committed and up to date
+        run: |
+          git ls-files --error-unmatch requirements/.index.md > /dev/null 2>&1 \
+            || { echo "::error::requirements/.index.md is not committed (git diff cannot see untracked files, so this check would pass silently)"; exit 1; }
+          git diff --exit-code -- requirements/.index.md \
+            || { echo "::error::requirements/.index.md is stale — run the lint locally and commit it"; exit 1; }
