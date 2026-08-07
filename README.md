@@ -11,7 +11,7 @@ The traditional waterfall document is written to be read once and "frozen". This
 - **Atomic, self-contained requirements** with two-way requirement ↔ code ↔ test traceability (`files.*` + `Implements:` comments in code)
 - **Requirement-first rule**: every behavioral code change is linked to a REQ
 - **Deterministic lint** (script + hook + CI) for structural rules; AI judgment only where judgment is needed
-- **Skills and subagents included** for the requirements lifecycle (drafting, review, reference resolution)
+- **Skills and subagents included** for the requirements lifecycle (drafting, review, reference resolution, flow/workflow authoring and coverage, module audits)
 
 ## Structure
 
@@ -21,19 +21,24 @@ CLAUDE.md -> AGENTS.md    Symlink: Claude Code loads it automatically
 docs/GUIDE.md             Human developer guide (never read by the AI)
 requirements/
   00_overview.md          Vision, actors, cross-cutting invariants
+  .index.md               Generated index (REQ/flow lookup; never edit by hand)
   _template_module.md     New module skeleton (not linted)
   _template_req.md        New requirement skeleton (not linted)
   auth.md                 Example module — adapt or delete
 .claude/
+  skills/req-audit/       /req-audit — audit one module for cross-REQ defects
   skills/req-new/         /req-new — generate a REQ from an informal description
   skills/req-resolve/     /req-resolve — resolve pending_refs into depends_on
   agents/req-reviewer.md  Read-only subagent for draft review (Sonnet)
   settings.json           Hook: automatic lint after edits to requirements/
 tools/
+  gen_auth_tests.py       Generate auth-rejection tests from the requirements index
   lint_requirements.py    Structural validator (13 errors + 4 warnings)
   hooks/lint_on_edit.py   Hook script
 .github/workflows/        CI running the lint on push/PR
 ```
+
+Flow/workflow helpers (`/flow-new`, `flow-coverage`) are part of the AI operating protocol documented in `AGENTS.md`.
 
 ## Quick start
 
