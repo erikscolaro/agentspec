@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "agentspec",
+  "description": "Requirements written for AI coding agents.",
+  "owner": {
+    "name": "Erik Scolaro",
+    "url": "https://github.com/erikscolaro"
+  },
+  "plugins": [
+    {
+      "name": "agentspec",
+      "description": "REQ/flow templates, requirements lint, skills and subagents for the requirements lifecycle.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

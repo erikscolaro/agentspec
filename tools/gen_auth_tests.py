@@ -33,7 +33,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path.cwd()  # run from the project root (the plugin calls it from there too)
 INDEX = REPO_ROOT / "requirements" / ".index.md"
 
 # --- adapt from here ---------------------------------------------------------

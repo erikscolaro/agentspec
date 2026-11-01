@@ -1,7 +1,7 @@
 # Module: Auth
 
-<!-- EXAMPLE MODULE: shows the methodology applied. Adapt it to your project
-     or delete it. It is the cross-cutting module par excellence: other modules
+<!-- EXAMPLE MODULE: shows the methodology applied. Copy it into requirements/ and adapt it,
+     or just read it. It is the cross-cutting module par excellence: other modules
      reference it via depends_on and auth_required instead of repeating behavior. -->
 
 ```yaml

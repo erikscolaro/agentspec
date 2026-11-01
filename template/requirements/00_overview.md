@@ -59,8 +59,8 @@ Every entity identifier exposed via API is a UUID v4. No sequential ID is ever e
 
 | Module | File | Status |
 |---|---|---|
-| auth | [auth.md](auth.md) | draft |
+| | | |
 
 ## Working on this repo
 
-The full operating protocol (session start, commands, boundaries, test guidelines, tools) is in [`AGENTS.md`](../AGENTS.md) (symlinked as `CLAUDE.md`, so Claude Code loads it automatically). The human developer guide is in [`docs/GUIDE.md`](../docs/GUIDE.md).
+The full operating protocol (session start, commands, boundaries, test guidelines, tools) is in [`AGENTS.md`](../AGENTS.md) (imported by `CLAUDE.md`, so Claude Code loads it automatically).

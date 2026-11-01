@@ -1,53 +1,70 @@
-# AI Requirements Template
+# agentspec
 
-A template for writing software requirements optimized for iteration with AI coding assistants (Claude Code, Cursor, etc.), while keeping the human readability of a classic requirements document.
+A Claude Code plugin for writing software requirements optimized for iteration with AI coding assistants, while keeping the human readability of a classic requirements document.
 
 ## Philosophy
 
-The traditional waterfall document is written to be read once and "frozen". This template produces requirements the AI can **re-consult and update on every iteration cycle**, with no implicit context to fill in and no token waste:
+The traditional waterfall document is written to be read once and "frozen". agentspec produces requirements the AI can **re-consult and update on every iteration cycle**, with no implicit context to fill in and no token waste:
 
 - **Markdown + YAML frontmatter** per requirement: parsable metadata + readable prose
 - **One file per module**: fits the context window, iterate on one part at a time
-- **Atomic, self-contained requirements** with two-way requirement ↔ code ↔ test traceability (`files.*` + `Implements:` comments in code)
+- **Atomic, self-contained requirements** with two-way requirement ↔ code ↔ test traceability (`files.*` + `Implements:` / `Covers:` comments)
 - **Requirement-first rule**: every behavioral code change is linked to a REQ
 - **Deterministic lint** (script + hook + CI) for structural rules; AI judgment only where judgment is needed
-- **Skills and subagents included** for the requirements lifecycle (drafting, review, reference resolution, flow/workflow authoring and coverage, module audits)
+- **Skills and subagents** for the requirements lifecycle
 
-## Structure
+## Requirements
+
+Python 3 with PyYAML (`pip install pyyaml`). Nothing else.
+
+## Install
 
 ```
-AGENTS.md                 Operating protocol for the AI (always in context — minimal)
-CLAUDE.md -> AGENTS.md    Symlink: Claude Code loads it automatically
-docs/GUIDE.md             Human developer guide (never read by the AI)
-requirements/
-  00_overview.md          Vision, actors, cross-cutting invariants
-  .index.md               Generated index (REQ/flow lookup; never edit by hand)
-  _template_module.md     New module skeleton (not linted)
-  _template_req.md        New requirement skeleton (not linted)
-  auth.md                 Example module — adapt or delete
-.claude/
-  skills/req-audit/       /req-audit — audit one module for cross-REQ defects
-  skills/req-new/         /req-new — generate a REQ from an informal description
-  skills/req-resolve/     /req-resolve — resolve pending_refs into depends_on
-  agents/req-reviewer.md  Read-only subagent for draft review (Sonnet)
-  settings.json           Hook: automatic lint after edits to requirements/
-tools/
-  gen_auth_tests.py       Generate auth-rejection tests from the requirements index
-  lint_requirements.py    Structural validator (13 errors + 4 warnings)
-  hooks/lint_on_edit.py   Hook script
-.github/workflows/        CI running the lint on push/PR
+/plugin marketplace add erikscolaro/agentspec
+/plugin install agentspec@agentspec
 ```
 
-Flow/workflow helpers (`/flow-new`, `flow-coverage`) are part of the AI operating protocol documented in `AGENTS.md`.
+You get:
 
-## Quick start
+| Component | Use |
+|---|---|
+| `/agentspec:init` | set up agentspec in the current project |
+| `/agentspec:req-new` | generate a REQ from an informal description |
+| `/agentspec:req-audit` | audit one module for defects between REQs (report only) |
+| `/agentspec:req-resolve` | resolve `pending_refs` into `depends_on` (explicit only) |
+| `/agentspec:flow-new` | turn a journey description into a `### FLOW-…` block |
+| `req-reviewer` agent | review `draft` REQs, read-only |
+| `req-writer` agent | write decisions already taken into the REQs |
+| `flow-coverage` agent | match flow steps against existing REQs, read-only |
+| hook | runs the lint after every edit to `requirements/*.md` |
 
-1. **Use this template** on GitHub
-2. Fill in `requirements/00_overview.md`
-3. Adapt Commands and Conventions in `AGENTS.md` to your stack — the **requirements language** is English by default and can be changed there
-4. Read `docs/GUIDE.md` for the full workflow
+## First use
 
-Local lint: `pip install pyyaml && python tools/lint_requirements.py`
+In your project root run `/agentspec:init`. It copies, and never overwrites (existing files are listed as skipped):
+
+```
+AGENTS.md                              operating protocol for the AI
+CLAUDE.md                              contains only @AGENTS.md
+requirements/00_overview.md            vision, actors, cross-cutting invariants
+requirements/_template_module.md       module skeleton
+requirements/_template_req.md          requirement skeleton
+tools/lint_requirements.py             the lint
+tools/gen_auth_tests.py                auth-rejection test generator
+.github/workflows/lint-requirements.yml   CI
+```
+
+Then:
+
+1. Fill in `requirements/00_overview.md`
+2. Adapt the Commands table and the requirements language in `AGENTS.md`
+3. Adapt `tools/gen_auth_tests.py`: its three constants at the top produce a Rust/rstest test as an example. Rewrite them for your test framework (the docstring has a pytest version) before the first REQ declares a protected route.
+4. Create one module per file from `_template_module.md` — [`docs/example-auth.md`](docs/example-auth.md) is a worked example
+
+The full workflow is in [`docs/GUIDE.md`](docs/GUIDE.md).
+
+## Where the scripts live
+
+The plugin's `tools/` is what the skills and the hook run (`${CLAUDE_PLUGIN_ROOT}/tools/…`, always from the project root). `init` also copies both scripts into the project's `tools/`, so CI and other agents work without the plugin. The two copies can drift after a plugin update: to refresh the lint, delete `tools/lint_requirements.py` and run `/agentspec:init` again. `tools/gen_auth_tests.py` holds your own constants, so update it by hand.
 
 ## Requirement lifecycle
 
@@ -55,13 +72,13 @@ Local lint: `pip install pyyaml && python tools/lint_requirements.py`
 
 The AI proposes status transitions, the human confirms. `tested` requires `files.test` populated and the module's full suite green. Abandoned requirements become `deprecated` with a reason — never deleted.
 
-## Key rules (details in AGENTS.md)
+## Key rules (details in `template/AGENTS.md`)
 
 - A failing test assertion is fixed by correcting the code or reporting a problem in the requirement — **never by weakening the assertion**
 - On conflict (between requirements, or between an existing test and new behavior) the AI **stops and reports**
-- Cross references are written in natural language in `pending_refs` and resolved into canonical IDs with `/req-resolve`
+- Cross references are written in natural language in `pending_refs` and resolved into canonical IDs with `/agentspec:req-resolve`
 - Implementing code carries an `Implements: REQ-XXX-NNN` comment — cross-language traceability, verified by the lint
 
-## Making it a GitHub template
+## Other agents
 
-After pushing: **Settings → General → Template repository** ✓
+Only Claude Code is packaged for now. The skills (`skills/*/SKILL.md`) and agents (`agents/*.md`) are plain markdown and can be followed as playbooks by other agents.
