@@ -19,7 +19,7 @@ Underlying principle: whatever is always in context (method + `AGENTS.md`) stays
 
 1. Install the plugin (see README) and run `/agentspec:init` in your project
 2. Fill in `requirements/00_overview.md`: vision, actors, constraints, cross-cutting invariants
-3. In `AGENTS.md`, adapt: the **Commands** table to your stack and the **requirements language** (English by default; set e.g. Italian there and every REQ, report and changelog will follow)
+3. Check `AGENTS.md`: `init` fills in the **Commands** table and the **requirements language** (set e.g. Italian and every REQ, report and changelog will follow) from your project files and a short questionnaire
 4. Create one file per module from `requirements/_template_module.md` (`docs/example-auth.md` is a worked example)
 5. Check the lint locally: `pip install pyyaml && python3 tools/lint_requirements.py`
 

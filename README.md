@@ -24,21 +24,6 @@ Python 3 with PyYAML (`pip install pyyaml`). Nothing else.
 /plugin install agentspec@agentspec
 ```
 
-You get:
-
-| Component | Use |
-|---|---|
-| `/agentspec:init` | set up agentspec in the current project |
-| `/agentspec:req-new` | generate a REQ from an informal description |
-| `/agentspec:req-audit` | audit one module for defects between REQs (report only) |
-| `/agentspec:req-resolve` | resolve `pending_refs` into `depends_on` (explicit only) |
-| `/agentspec:flow-new` | turn a journey description into a `### FLOW-…` block |
-| `req-reviewer` agent | review `draft` REQs, read-only |
-| `req-writer` agent | write decisions already taken into the REQs |
-| `flow-coverage` agent | match flow steps against existing REQs, read-only |
-| SessionStart hook | injects the method rules (`method/AGENTS-METHOD.md`) in projects that have `requirements/00_overview.md` |
-| PostToolUse hook | runs the lint after every edit to `requirements/*.md` |
-
 ## First use
 
 In your project root run `/agentspec:init`. It copies, and never overwrites (existing files are listed as skipped):
@@ -57,11 +42,30 @@ tools/gen_auth_tests.py                auth-rejection test generator
 Then:
 
 1. Fill in `requirements/00_overview.md`
-2. Adapt the Commands table and the requirements language in `AGENTS.md`
+2. Check `AGENTS.md`: `init` fills in the commands and the requirements language from your project and a short questionnaire
 3. Adapt `tools/gen_auth_tests.py`: its three constants at the top produce a Rust/rstest test as an example. Rewrite them for your test framework (the docstring has a pytest version) before the first REQ declares a protected route.
 4. Create one module per file from `_template_module.md` — [`docs/example-auth.md`](docs/example-auth.md) is a worked example
 
 The full workflow is in [`docs/GUIDE.md`](docs/GUIDE.md).
+
+## Available tools
+
+| Tool | Type | What it does | When to use it |
+|---|---|---|---|
+| `/agentspec:init` | skill | copies the templates and scripts, then fills `AGENTS.md` from your project and a short questionnaire | once, in a new project |
+| `/agentspec:req-new` | skill | turns an informal description into a compliant `draft` REQ | whenever you need a new requirement |
+| `/agentspec:req-audit` | skill | lists defects between the REQs of one module (report only) | before approving a module, or when it feels inconsistent |
+| `/agentspec:req-resolve` | skill | resolves `pending_refs` into `depends_on` IDs (explicit only) | when the session start protocol flags `pending_refs` |
+| `/agentspec:flow-new` | skill | turns a user journey into a `### FLOW-…` block pointing to REQs | when you describe a journey across several REQs |
+| `req-reviewer` | agent | reviews `draft` REQs, read-only | before promoting `draft → approved` |
+| `req-writer` | agent | writes decisions already taken with you into the REQs, never decides | during a design session, one message per decision batch |
+| `flow-coverage` | agent | matches flow steps against existing REQs, read-only | called by `flow-new`, or to ask which REQs a journey covers |
+| lint on edit | hook (PostToolUse) | runs the requirements lint after every edit to `requirements/*.md` | automatic |
+| method at start | hook (SessionStart) | injects `method/AGENTS-METHOD.md` in projects with `requirements/00_overview.md` | automatic |
+| `tools/lint_requirements.py` | script | structural lint of the requirements, regenerates `.index.md` | locally and in CI |
+| `lint_requirements.py --emit-testmap` | script option | prints the scenario → REQ → test map | when you want to see test coverage (human only) |
+| `lint_requirements.py --emit-routes` | script option | prints the route → REQ table | when you want the API surface at a glance (human only, never commit) |
+| `tools/gen_auth_tests.py` | script | writes the auth-rejection test from the index | after a REQ changes `route` or `auth_required` |
 
 ## Where the rules live
 
