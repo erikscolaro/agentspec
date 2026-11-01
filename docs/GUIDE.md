@@ -1,29 +1,26 @@
 # Developer guide
 
-This guide is for you, not for the AI: it is not referenced by `AGENTS.md`, so it never consumes context tokens. Here you find the *why* and the *how* of using the template day to day.
+This guide is for you, not for the AI: it lives in the plugin repository, not in your project, so it never consumes context tokens. Here you find the *why* and the *how* of using the template day to day.
 
 ## Who reads what
 
 | File | Reader | When |
 |---|---|---|
-| `AGENTS.md` (= `CLAUDE.md`) | the AI | always in context, every session |
+| `AGENTS.md` (imported by `CLAUDE.md`) | the AI | always in context, every session |
 | `requirements/00_overview.md` | AI + human | session start (protocol) |
 | `requirements/<module>.md` | AI + human | on demand, only modules touched by the task |
-| `.claude/skills/`, `.claude/agents/` | Claude Code | auto-discovery; other agents open them as markdown |
+| plugin `skills/`, `agents/` | Claude Code | loaded by the plugin; other agents open them as markdown |
 | `docs/GUIDE.md` (this file) | you only | never loaded by the AI |
 
 Underlying principle: whatever is always in context (`AGENTS.md`) stays minimal; everything else loads only when needed.
 
 ## Initial setup (once)
 
-1. **Use this template** on GitHub → new repo
+1. Install the plugin (see README) and run `/agentspec:init` in your project
 2. Fill in `requirements/00_overview.md`: vision, actors, constraints, cross-cutting invariants
-3. In `AGENTS.md`, adapt: the **Commands** table to your stack (examples are Rust/cargo) and the **Conventions** — including the **requirements language** (English by default; set e.g. Italian there and every REQ, report and changelog will follow)
-4. Adapt or delete `requirements/auth.md` (a working example)
-5. Create one file per module from `requirements/_template_module.md`
-6. Check the lint locally: `pip install pyyaml && python tools/lint_requirements.py`
-
-On Windows: `CLAUDE.md` is a symlink to `AGENTS.md`. If git doesn't preserve it (`git config core.symlinks true` before cloning), recreate it or copy the file — what matters is that they don't diverge.
+3. In `AGENTS.md`, adapt: the **Commands** table to your stack and the **Conventions** — including the **requirements language** (English by default; set e.g. Italian there and every REQ, report and changelog will follow)
+4. Create one file per module from `requirements/_template_module.md` (`docs/example-auth.md` is a worked example)
+5. Check the lint locally: `pip install pyyaml && python3 tools/lint_requirements.py`
 
 ## Daily workflow
 
@@ -31,7 +28,7 @@ On Windows: `CLAUDE.md` is a symlink to `AGENTS.md`. If git doesn't preserve it 
 
 Two equivalent paths:
 
-- Tell the AI what you want in natural language → the `/req-new` skill generates the compliant block (correct ID, `status: draft`, vague references into `pending_refs`)
+- Tell the AI what you want in natural language → the `/agentspec:req-new` skill generates the compliant block (correct ID, `status: draft`, vague references into `pending_refs`)
 - Write it by hand copying `requirements/_template_req.md`
 
 Either way: don't stop to look up other requirements' exact IDs while writing. Drop the phrase into `pending_refs` ("when the token is expired") and move on — resolution is a separate step.
@@ -42,11 +39,11 @@ Before approving a draft, invoke the `req-reviewer` subagent ("review the drafts
 
 ### 3. Resolving pending_refs
 
-Periodically (or at session start if the protocol flags them): `/req-resolve`. The AI matches against existing REQs' `aliases`; on ambiguous cases it asks instead of guessing.
+Periodically (or at session start if the protocol flags them): `/agentspec:req-resolve`. The AI matches against existing REQs' `aliases`; on ambiguous cases it asks instead of guessing.
 
 ### 4. Implementation
 
-Give the AI the task by ID ("implement REQ-UPLOAD-002"). The protocol in `AGENTS.md` is **requirement-first**: if you ask for a behavior change without citing a REQ, the AI must find the matching one or propose `/req-new` before coding. It must also read the module and dependencies first, write one test per Given/When/Then scenario, add an `Implements: REQ-XXX-NNN` comment on the implementing function (cross-language traceability, checked by the lint), and stop on conflicts instead of resolving them on its own.
+Give the AI the task by ID ("implement REQ-UPLOAD-002"). The protocol in `AGENTS.md` is **requirement-first**: if you ask for a behavior change without citing a REQ, the AI must find the matching one or propose `/agentspec:req-new` before coding. It must also read the module and dependencies first, write one test per Given/When/Then scenario, add an `Implements: REQ-XXX-NNN` comment on the implementing function (cross-language traceability, checked by the lint), and stop on conflicts instead of resolving them on its own.
 
 ### 5. Promoting to tested
 
@@ -58,8 +55,8 @@ It validates structure, not content (content is the review's job): unique well-f
 
 It runs in three places, ordered by distance from you:
 
-1. **Hook** (`.claude/settings.json`): automatically after every AI edit to `requirements/` — on failure the errors return as feedback to the agent, which fixes them immediately
-2. **Local**: `python tools/lint_requirements.py` whenever you want
+1. **Hook** (the plugin's `hooks/hooks.json`): automatically after every AI edit to `requirements/` — on failure the errors return as feedback to the agent, which fixes them immediately
+2. **Local**: `python3 tools/lint_requirements.py` whenever you want
 3. **CI** (GitHub Action): on every push/PR touching requirements — the final safety net
 
 Exit code 1 = errors (blocking), 0 = clean or warnings only.
@@ -98,16 +95,16 @@ error, that ordering is a requirement.
 
 ### Writing one
 
-Use `/flow-new`. You give it a rough prose description; it reads the generated index,
+Use `/agentspec:flow-new`. You give it a rough prose description; it reads the generated index,
 delegates coverage matching to the `flow-coverage` subagent, runs the checks that need no
 input (vocabulary drift, two steps writing the same state), then asks you one batch of
 questions about what genuinely cannot be derived — ordering, cardinality, interruption
 semantics, retention.
 
-Steps with no matching REQ get `???`. That is deliberate: `/flow-new` does not create the
+Steps with no matching REQ get `???`. That is deliberate: `/agentspec:flow-new` does not create the
 missing requirements. It records them where the lint will keep surfacing them (W6 while
 the flow is `draft`, E14 once it is `approved`), and you resolve them one at a time with
-`/req-new` in a clean context. Writing four requirements back to back in one session
+`/agentspec:req-new` in a clean context. Writing four requirements back to back in one session
 produces a fourth that is measurably worse than the first.
 
 Set `flow_coverage: required` in a module header to turn on W5, which flags functional
@@ -124,7 +121,7 @@ Do not edit it. It exists so that an agent can locate a requirement across forty
 by reading one file instead of forty, and so the reverse question — *which flows use this
 REQ?* — is answerable at all.
 
-`python tools/lint_requirements.py --emit-routes` prints the route → REQ table to stdout.
+`python3 tools/lint_requirements.py --emit-routes` prints the route → REQ table to stdout.
 It is a human-facing view of data already in the index: read it when you want the API
 surface at a glance, never commit it. Committing it would recreate the hand-maintained
 routes table this replaced.
@@ -190,7 +187,7 @@ requirement was that? — needs two conventions:
 - the test carries a `Covers: REQ-XXX-NNN` comment, and the module header lists its
   `test_dirs` so the lint scans them
 
-With both in place, `python tools/lint_requirements.py --emit-testmap` prints
+With both in place, `python3 tools/lint_requirements.py --emit-testmap` prints
 `scenario | REQ | file::function`. E15 catches a `Covers:` naming a REQ that does not exist.
 
 W9 flags a named scenario with no matching test — but only once the REQ is past `draft`,
@@ -199,7 +196,7 @@ Tighten it to an error only when enough of your REQs are `tested` to make that r
 
 ## Generated auth tests
 
-`python tools/gen_auth_tests.py` reads the index and writes one parametrized test over
+`python3 tools/gen_auth_tests.py` reads the index and writes one parametrized test over
 every route with a non-`none` `auth_required`. Do not hand-edit the output: change the
 REQ and regenerate. CI runs it with `--check` and fails if the file is stale.
 
@@ -213,7 +210,7 @@ for pytest, JUnit, or whatever you use. The docstring carries a pytest example.
 
 ## Auditing a module
 
-`req-reviewer` looks inside one REQ at a time. `/req-audit` looks between them: two REQs
+`req-reviewer` looks inside one REQ at a time. `/agentspec:req-audit` looks between them: two REQs
 mutating the same field without knowing about each other, two failure conditions that can
 hold at once with no `error_precedence`, a `depends_on` no scenario exercises, an edge case
 that lives in prose and in no test, a REQ nothing references and no flow reaches.

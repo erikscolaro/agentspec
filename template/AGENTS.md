@@ -10,7 +10,7 @@ Before writing any code, in order:
 2. Read the module file(s) involved in the task (`requirements/<module>.md`). To locate a REQ
    across modules, read `requirements/.index.md` first (generated, one line per REQ) instead of
    opening every module file.
-3. If the modules you read contain `pending_refs`, flag it (resolution happens via `/req-resolve`)
+3. If the modules you read contain `pending_refs`, flag it (resolution happens via `/agentspec:req-resolve`)
 4. Check the `status` of the REQs the task touches:
    - `draft` → to be designed; confirm your interpretation before implementing
    - `approved` → ready to implement
@@ -45,43 +45,43 @@ Before writing any code, in order:
 
 | Action | Command |
 |---|---|
-| Full test suite | `cargo test` |
-| Single module tests | `cargo test --test <module>` |
-| Include slow tests | `cargo test -- --include-ignored` |
-| Code lint | `cargo clippy -- -D warnings` |
-| Format check | `cargo fmt --check` |
-| Requirements lint | `python tools/lint_requirements.py` |
-| Generate auth route tests | `python tools/gen_auth_tests.py` |
-| Scenario → REQ → test map (human only) | `python tools/lint_requirements.py --emit-testmap` |
-| Route → REQ table (human only) | `python tools/lint_requirements.py --emit-routes` |
+| Full test suite | `<e.g. cargo test, pytest, npm test>` |
+| Single module tests | `<…>` |
+| Include slow tests | `<…>` |
+| Code lint | `<…>` |
+| Format check | `<…>` |
+| Requirements lint | `python3 tools/lint_requirements.py` |
+| Generate auth route tests | `python3 tools/gen_auth_tests.py` |
+| Scenario → REQ → test map (human only) | `python3 tools/lint_requirements.py --emit-testmap` |
+| Route → REQ table (human only) | `python3 tools/lint_requirements.py --emit-routes` |
 
-Tests marked `#[ignore]` (slow/expensive) run only before proposing `status: tested`, not on every iteration.
+Slow/expensive tests run only before proposing `status: tested`, not on every iteration.
 
 ## Available tools
 
 | Tool | Type | Use |
 |---|---|---|
-| `/flow-new` | skill | turn an informal journey description into a `### FLOW-…` block |
+| `/agentspec:flow-new` | skill | turn an informal journey description into a `### FLOW-…` block |
 | `flow-coverage` | read-only subagent | match flow steps against existing REQs; returns a digest |
-| `/req-new` | skill | generate a new REQ from an informal description |
-| `/req-audit` | skill, Sonnet | audit ONE module for defects between REQs; report only |
-| `/req-resolve` | skill, explicit invocation only | resolve `pending_refs` into `depends_on` |
+| `/agentspec:req-new` | skill | generate a new REQ from an informal description |
+| `/agentspec:req-audit` | skill, Sonnet | audit ONE module for defects between REQs; report only |
+| `/agentspec:req-resolve` | skill, explicit invocation only | resolve `pending_refs` into `depends_on` |
 | `req-reviewer` | read-only subagent | review `draft` REQs: report only, no file or status changes |
 | `req-writer` | background subagent | writes decisions already taken with the human into the REQs; one message per decision batch, never decides |
 | `tools/lint_requirements.py` | script | structural validation; runs via hook and in CI |
 | `tools/gen_auth_tests.py` | script | writes the auth-rejection test from the index; never hand-edit its output |
 
-Agents other than Claude Code: skills and subagents are plain markdown files under `.claude/` — open and follow them as playbooks.
+Skills and subagents come from the agentspec Claude Code plugin. Other agents: they are plain markdown files in the plugin repository (`skills/`, `agents/`) — open and follow them as playbooks.
 
 ## Boundaries
 
 ### Always
 - Follow the session start protocol before modifying code
-- **Requirement-first**: every behavioral code change is linked to a REQ. If the task doesn't reference one, identify the matching REQ or propose `/req-new` before implementing.
+- **Requirement-first**: every behavioral code change is linked to a REQ. If the task doesn't reference one, identify the matching REQ or propose `/agentspec:req-new` before implementing.
 - Add the `Implements: REQ-XXX-NNN` comment when implementing a requirement, and update its `files.src`/`files.test`
 - Run the requirements lint after changes to `requirements/` (in Claude Code this runs automatically via hook)
 - Treat `requirements/.index.md` as generated: read it, never edit it, never resolve conflicts in it
-- Run the module's full suite (including `#[ignore]` tests) before proposing `status: tested`
+- Run the module's full suite (slow tests included) before proposing `status: tested`
 - Update the REQ changelog on every substantial change to the requirement
 
 ### Ask first
@@ -101,7 +101,7 @@ Agents other than Claude Code: skills and subagents are plain markdown files und
   in `.index.md`, and committing it would recreate the duplicated routes table we removed.
 - Write an unauthenticated-request scenario in a REQ that already declares `route` + `auth_required`
 - Grow a REQ's Description beyond its one sentence of intent: propose the right section instead
-- Hand-edit `tests/auth_routes.rs` or any other generated test: change the REQ's `route`/`auth_required` and regenerate
+- Hand-edit the test written by `tools/gen_auth_tests.py` or any other generated test: change the REQ's `route`/`auth_required` and regenerate
 <!-- Add project-specific paths the AI must not touch without a linked REQ, e.g.: -->
 <!-- - Touching `src/signature/crypto.rs` without an explicitly linked REQ -->
 
@@ -109,7 +109,7 @@ Agents other than Claude Code: skills and subagents are plain markdown files und
 
 - **Conflicting REQs**: if two requirements contradict each other during implementation, stop and report both IDs with the nature of the conflict.
 - **Deprecation**: `status: deprecated` + reason in the changelog + replacing REQ if any. Never delete.
-- **New REQs**: use `/req-new`, or copy the structure from `requirements/_template_req.md`.
+- **New REQs**: use `/agentspec:req-new`, or copy the structure from `requirements/_template_req.md`.
 
 ## Test guidelines
 

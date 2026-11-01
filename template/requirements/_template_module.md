@@ -61,7 +61,7 @@ flow_coverage: optional        # optional | required — 'required' turns on W5 
      every step must reference a REQ, and no step may introduce behavior that is
      not specified in a REQ. If deleting a flow would leave any behavior
      unspecified, that behavior was in the wrong place — move it into a REQ.
-     Use /flow-new. Each flow is a level-3 heading (###) nested here. -->
+     Use /agentspec:flow-new. Each flow is a level-3 heading (###) nested here. -->
 
 ### FLOW-XXX-NAME — Short goal statement
 

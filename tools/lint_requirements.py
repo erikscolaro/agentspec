@@ -50,7 +50,7 @@ try:
 except ImportError:  # pragma: no cover
     sys.exit("PyYAML missing: pip install pyyaml")
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path.cwd()  # run from the project root (the plugin calls it from there too)
 REQ_DIR = REPO_ROOT / "requirements"
 
 ID_RE = re.compile(r"^REQ-[A-Z0-9]+-\d+$")
