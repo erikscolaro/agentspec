@@ -1,6 +1,7 @@
 ---
 name: req-writer
 description: Writes decisions already taken with the human into the requirements (requirements/*.md, PENDING.md). Long-lived: launched once per session in background, then fed one message per decision batch. Never decides on its own.
+model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
