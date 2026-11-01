@@ -67,6 +67,7 @@ Tests marked `#[ignore]` (slow/expensive) run only before proposing `status: tes
 | `/req-audit` | skill, Sonnet | audit ONE module for defects between REQs; report only |
 | `/req-resolve` | skill, explicit invocation only | resolve `pending_refs` into `depends_on` |
 | `req-reviewer` | read-only subagent | review `draft` REQs: report only, no file or status changes |
+| `req-writer` | background subagent | writes decisions already taken with the human into the REQs; one message per decision batch, never decides |
 | `tools/lint_requirements.py` | script | structural validation; runs via hook and in CI |
 | `tools/gen_auth_tests.py` | script | writes the auth-rejection test from the index; never hand-edit its output |
 

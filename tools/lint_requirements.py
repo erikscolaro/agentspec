@@ -27,7 +27,7 @@ Mechanically validates the methodology rules:
   W7  scenario duplicates a dependency's auth rejection (401/403 + a depends_on ID);
       remove it, coverage is implied by route + auth_required
   W8  auth_required set but no route declared
-  W9  named scenario with no matching test (only for REQs past draft)
+  W9  named scenario with no matching test (only for implemented or tested REQs)
 
 Exit code 1 on errors, 0 on warnings only or clean.
 Files prefixed with "_" are ignored. 00_overview.md does not require a module header.
@@ -426,7 +426,7 @@ def main(argv: list[str]) -> int:
                 fn = FN_NAME_RE.search(tail)
                 covers.setdefault(ref, []).append(f"{rel_f}::{fn.group(1) if fn else '?'}")
 
-    # W9: named scenario with no matching test, once the REQ is past draft
+    # W9: named scenario with no matching test, once the REQ is implemented
     testmap: list[tuple[str, str, str]] = []  # (scenario, REQ, location)
     for rid, i in sorted(all_reqs.items()):
         found = covers.get(rid, [])
@@ -435,7 +435,7 @@ def main(argv: list[str]) -> int:
             hit = next((c for c in found if c.endswith(f"::{sc}")), None) \
                 or next((d for d in declared if d.endswith(f"::{sc}")), None)
             testmap.append((sc, rid, hit or "\u2014"))
-            if hit is None and i["status"] not in ("draft", "deprecated"):
+            if hit is None and i["status"] not in ("draft", "approved", "deprecated"):
                 problems.append(("W9", i["loc"], f"{rid}: scenario '{sc}' has no matching test"))
 
     if emit_testmap:
