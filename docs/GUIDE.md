@@ -6,19 +6,20 @@ This guide is for you, not for the AI: it lives in the plugin repository, not in
 
 | File | Reader | When |
 |---|---|---|
-| `AGENTS.md` (imported by `CLAUDE.md`) | the AI | always in context, every session |
+| plugin `method/AGENTS-METHOD.md` | the AI | injected by the SessionStart hook in projects with `requirements/00_overview.md`; other agents read it by hand |
+| `AGENTS.md` (imported by `CLAUDE.md`) | the AI | always in context, every session: project-specific rules only |
 | `requirements/00_overview.md` | AI + human | session start (protocol) |
 | `requirements/<module>.md` | AI + human | on demand, only modules touched by the task |
 | plugin `skills/`, `agents/` | Claude Code | loaded by the plugin; other agents open them as markdown |
 | `docs/GUIDE.md` (this file) | you only | never loaded by the AI |
 
-Underlying principle: whatever is always in context (`AGENTS.md`) stays minimal; everything else loads only when needed.
+Underlying principle: whatever is always in context (method + `AGENTS.md`) stays minimal; everything else loads only when needed.
 
 ## Initial setup (once)
 
 1. Install the plugin (see README) and run `/agentspec:init` in your project
 2. Fill in `requirements/00_overview.md`: vision, actors, constraints, cross-cutting invariants
-3. In `AGENTS.md`, adapt: the **Commands** table to your stack and the **Conventions** — including the **requirements language** (English by default; set e.g. Italian there and every REQ, report and changelog will follow)
+3. Check `AGENTS.md`: `init` fills in the **Commands** table and the **requirements language** (set e.g. Italian and every REQ, report and changelog will follow) from your project files and a short questionnaire
 4. Create one file per module from `requirements/_template_module.md` (`docs/example-auth.md` is a worked example)
 5. Check the lint locally: `pip install pyyaml && python3 tools/lint_requirements.py`
 
@@ -43,7 +44,7 @@ Periodically (or at session start if the protocol flags them): `/agentspec:req-r
 
 ### 4. Implementation
 
-Give the AI the task by ID ("implement REQ-UPLOAD-002"). The protocol in `AGENTS.md` is **requirement-first**: if you ask for a behavior change without citing a REQ, the AI must find the matching one or propose `/agentspec:req-new` before coding. It must also read the module and dependencies first, write one test per Given/When/Then scenario, add an `Implements: REQ-XXX-NNN` comment on the implementing function (cross-language traceability, checked by the lint), and stop on conflicts instead of resolving them on its own.
+Give the AI the task by ID ("implement REQ-UPLOAD-002"). The method (`method/AGENTS-METHOD.md`) is **requirement-first**: if you ask for a behavior change without citing a REQ, the AI must find the matching one or propose `/agentspec:req-new` before coding. It must also read the module and dependencies first, write one test per Given/When/Then scenario, add an `Implements: REQ-XXX-NNN` comment on the implementing function (cross-language traceability, checked by the lint), and stop on conflicts instead of resolving them on its own.
 
 ### 5. Promoting to tested
 
@@ -183,7 +184,7 @@ Description should get longer.
 `files.test` points from a REQ to its tests. The reverse — a test fails in CI, which
 requirement was that? — needs two conventions:
 
-- the test function is named exactly after the scenario, which `AGENTS.md` already requires
+- the test function is named exactly after the scenario, which the method already requires
 - the test carries a `Covers: REQ-XXX-NNN` comment, and the module header lists its
   `test_dirs` so the lint scans them
 

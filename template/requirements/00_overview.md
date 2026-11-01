@@ -63,4 +63,4 @@ Every entity identifier exposed via API is a UUID v4. No sequential ID is ever e
 
 ## Working on this repo
 
-The full operating protocol (session start, commands, boundaries, test guidelines, tools) is in [`AGENTS.md`](../AGENTS.md) (imported by `CLAUDE.md`, so Claude Code loads it automatically).
+The method rules (session start, conventions, boundaries, test guidelines, tools) are injected by the agentspec plugin at session start. Project-specific rules (requirements language, commands, protected paths) are in [`AGENTS.md`](../AGENTS.md) (imported by `CLAUDE.md`).

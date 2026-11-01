@@ -24,26 +24,12 @@ Python 3 with PyYAML (`pip install pyyaml`). Nothing else.
 /plugin install agentspec@agentspec
 ```
 
-You get:
-
-| Component | Use |
-|---|---|
-| `/agentspec:init` | set up agentspec in the current project |
-| `/agentspec:req-new` | generate a REQ from an informal description |
-| `/agentspec:req-audit` | audit one module for defects between REQs (report only) |
-| `/agentspec:req-resolve` | resolve `pending_refs` into `depends_on` (explicit only) |
-| `/agentspec:flow-new` | turn a journey description into a `### FLOW-…` block |
-| `req-reviewer` agent | review `draft` REQs, read-only |
-| `req-writer` agent | write decisions already taken into the REQs |
-| `flow-coverage` agent | match flow steps against existing REQs, read-only |
-| hook | runs the lint after every edit to `requirements/*.md` |
-
 ## First use
 
 In your project root run `/agentspec:init`. It copies, and never overwrites (existing files are listed as skipped):
 
 ```
-AGENTS.md                              operating protocol for the AI
+AGENTS.md                              project-specific rules for the AI
 CLAUDE.md                              contains only @AGENTS.md
 requirements/00_overview.md            vision, actors, cross-cutting invariants
 requirements/_template_module.md       module skeleton
@@ -56,11 +42,34 @@ tools/gen_auth_tests.py                auth-rejection test generator
 Then:
 
 1. Fill in `requirements/00_overview.md`
-2. Adapt the Commands table and the requirements language in `AGENTS.md`
+2. Check `AGENTS.md`: `init` fills in the commands and the requirements language from your project and a short questionnaire
 3. Adapt `tools/gen_auth_tests.py`: its three constants at the top produce a Rust/rstest test as an example. Rewrite them for your test framework (the docstring has a pytest version) before the first REQ declares a protected route.
 4. Create one module per file from `_template_module.md` — [`docs/example-auth.md`](docs/example-auth.md) is a worked example
 
 The full workflow is in [`docs/GUIDE.md`](docs/GUIDE.md).
+
+## Available tools
+
+| Tool | Type | What it does | When to use it |
+|---|---|---|---|
+| `/agentspec:init` | skill | copies the templates and scripts, then fills `AGENTS.md` from your project and a short questionnaire | once, in a new project |
+| `/agentspec:req-new` | skill | turns an informal description into a compliant `draft` REQ | whenever you need a new requirement |
+| `/agentspec:req-audit` | skill | lists defects between the REQs of one module (report only) | before approving a module, or when it feels inconsistent |
+| `/agentspec:req-resolve` | skill | resolves `pending_refs` into `depends_on` IDs (explicit only) | when the session start protocol flags `pending_refs` |
+| `/agentspec:flow-new` | skill | turns a user journey into a `### FLOW-…` block pointing to REQs | when you describe a journey across several REQs |
+| `req-reviewer` | agent | reviews `draft` REQs, read-only | before promoting `draft → approved` |
+| `req-writer` | agent | writes decisions already taken with you into the REQs, never decides | during a design session, one message per decision batch |
+| `flow-coverage` | agent | matches flow steps against existing REQs, read-only | called by `flow-new`, or to ask which REQs a journey covers |
+| lint on edit | hook (PostToolUse) | runs the requirements lint after every edit to `requirements/*.md` | automatic |
+| method at start | hook (SessionStart) | injects `method/AGENTS-METHOD.md` in projects with `requirements/00_overview.md` | automatic |
+| `tools/lint_requirements.py` | script | structural lint of the requirements, regenerates `.index.md` | locally and in CI |
+| `lint_requirements.py --emit-testmap` | script option | prints the scenario → REQ → test map | when you want to see test coverage (human only) |
+| `lint_requirements.py --emit-routes` | script option | prints the route → REQ table | when you want the API surface at a glance (human only, never commit) |
+| `tools/gen_auth_tests.py` | script | writes the auth-rejection test from the index | after a REQ changes `route` or `auth_required` |
+
+## Where the rules live
+
+The general method rules are in the plugin, in [`method/AGENTS-METHOD.md`](method/AGENTS-METHOD.md): a SessionStart hook injects them only in projects with `requirements/00_overview.md`, so the plugin can stay installed at user level. The project's `AGENTS.md` keeps only what is specific to it: requirements language, commands, protected paths.
 
 ## Where the scripts live
 
@@ -72,7 +81,7 @@ The plugin's `tools/` is what the skills and the hook run (`${CLAUDE_PLUGIN_ROOT
 
 The AI proposes status transitions, the human confirms. `tested` requires `files.test` populated and the module's full suite green. Abandoned requirements become `deprecated` with a reason — never deleted.
 
-## Key rules (details in `template/AGENTS.md`)
+## Key rules (details in `method/AGENTS-METHOD.md`)
 
 - A failing test assertion is fixed by correcting the code or reporting a problem in the requirement — **never by weakening the assertion**
 - On conflict (between requirements, or between an existing test and new behavior) the AI **stops and reports**
@@ -81,4 +90,4 @@ The AI proposes status transitions, the human confirms. `tested` requires `files
 
 ## Other agents
 
-Only Claude Code is packaged for now. The skills (`skills/*/SKILL.md`) and agents (`agents/*.md`) are plain markdown and can be followed as playbooks by other agents.
+Only Claude Code is packaged for now. Other agents get no hook: point them at `method/AGENTS-METHOD.md` (copy it into the project or reference it from their instructions file) alongside the project's `AGENTS.md`. The skills (`skills/*/SKILL.md`) and agents (`agents/*.md`) are plain markdown and can be followed as playbooks by other agents.
