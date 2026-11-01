@@ -11,7 +11,8 @@
       "name": "agentspec",
       "description": "REQ/flow templates, requirements lint, skills and subagents for the requirements lifecycle.",
       "source": "./",
-      "category": "development"
+      "category": "development",
+      "version": "1.1.0"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "agentspec",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Requirements for AI coding agents: REQ/flow templates, lint, skills and subagents for the requirements lifecycle.",
   "author": {
     "name": "Erik Scolaro",

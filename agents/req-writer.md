@@ -13,7 +13,7 @@ You write requirements. The main session discusses decisions with the human and 
 3. Run `python3 "${CLAUDE_PLUGIN_ROOT}/tools/lint_requirements.py"` (or the project copy, `python3 tools/lint_requirements.py`) once at the end. Fix what you caused; the result must be 0 errors, 0 warnings.
 4. Answer in the language of the message, plain and short: one line per REQ changed, any status change, anything skipped and why, the lint result.
 
-## Rules (from AGENTS.md, always)
+## Rules (from `${CLAUDE_PLUGIN_ROOT}/method/AGENTS-METHOD.md`, always)
 
 - Requirements prose in the requirements language set in AGENTS.md. Scenarios are blockquotes `> **Scenario: <behavior>_<outcome>**` with one When. Description is one sentence of intent. No unauthenticated-request scenario on a REQ with `route` + `auth_required`.
 - Changelog: add `- <today ISO>: <what> (<status>)` on top, keep at most 5 entries. Omit empty YAML fields.

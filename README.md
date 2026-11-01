@@ -36,14 +36,15 @@ You get:
 | `req-reviewer` agent | review `draft` REQs, read-only |
 | `req-writer` agent | write decisions already taken into the REQs |
 | `flow-coverage` agent | match flow steps against existing REQs, read-only |
-| hook | runs the lint after every edit to `requirements/*.md` |
+| SessionStart hook | injects the method rules (`method/AGENTS-METHOD.md`) in projects that have `requirements/00_overview.md` |
+| PostToolUse hook | runs the lint after every edit to `requirements/*.md` |
 
 ## First use
 
 In your project root run `/agentspec:init`. It copies, and never overwrites (existing files are listed as skipped):
 
 ```
-AGENTS.md                              operating protocol for the AI
+AGENTS.md                              project-specific rules for the AI
 CLAUDE.md                              contains only @AGENTS.md
 requirements/00_overview.md            vision, actors, cross-cutting invariants
 requirements/_template_module.md       module skeleton
@@ -62,6 +63,10 @@ Then:
 
 The full workflow is in [`docs/GUIDE.md`](docs/GUIDE.md).
 
+## Where the rules live
+
+The general method rules are in the plugin, in [`method/AGENTS-METHOD.md`](method/AGENTS-METHOD.md): a SessionStart hook injects them only in projects with `requirements/00_overview.md`, so the plugin can stay installed at user level. The project's `AGENTS.md` keeps only what is specific to it: requirements language, commands, protected paths.
+
 ## Where the scripts live
 
 The plugin's `tools/` is what the skills and the hook run (`${CLAUDE_PLUGIN_ROOT}/tools/…`, always from the project root). `init` also copies both scripts into the project's `tools/`, so CI and other agents work without the plugin. The two copies can drift after a plugin update: to refresh the lint, delete `tools/lint_requirements.py` and run `/agentspec:init` again. `tools/gen_auth_tests.py` holds your own constants, so update it by hand.
@@ -72,7 +77,7 @@ The plugin's `tools/` is what the skills and the hook run (`${CLAUDE_PLUGIN_ROOT
 
 The AI proposes status transitions, the human confirms. `tested` requires `files.test` populated and the module's full suite green. Abandoned requirements become `deprecated` with a reason — never deleted.
 
-## Key rules (details in `template/AGENTS.md`)
+## Key rules (details in `method/AGENTS-METHOD.md`)
 
 - A failing test assertion is fixed by correcting the code or reporting a problem in the requirement — **never by weakening the assertion**
 - On conflict (between requirements, or between an existing test and new behavior) the AI **stops and reports**
@@ -81,4 +86,4 @@ The AI proposes status transitions, the human confirms. `tested` requires `files
 
 ## Other agents
 
-Only Claude Code is packaged for now. The skills (`skills/*/SKILL.md`) and agents (`agents/*.md`) are plain markdown and can be followed as playbooks by other agents.
+Only Claude Code is packaged for now. Other agents get no hook: point them at `method/AGENTS-METHOD.md` (copy it into the project or reference it from their instructions file) alongside the project's `AGENTS.md`. The skills (`skills/*/SKILL.md`) and agents (`agents/*.md`) are plain markdown and can be followed as playbooks by other agents.
