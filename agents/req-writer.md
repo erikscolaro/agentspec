@@ -12,7 +12,7 @@ You write requirements. The main session discusses decisions with the human and 
 1. Read only what the decision touches: `requirements/.index.md` to find a REQ, then the REQ blocks and the module's Invariant rules, glossary and Exposed routes.
 2. Apply the decision exactly. A new REQ follows `${CLAUDE_PLUGIN_ROOT}/skills/req-new/SKILL.md` and `requirements/_template_req.md`.
 3. Run `python3 "${CLAUDE_PLUGIN_ROOT}/tools/lint_requirements.py"` (or the project copy, `python3 tools/lint_requirements.py`) once at the end. Fix what you caused; the result must be 0 errors, 0 warnings.
-4. Answer in the language of the message, plain and short: one line per REQ changed, any status change, anything skipped and why, the lint result.
+4. Answer in the language of the message, plain and short, with problems only: open questions for the human, anything skipped and why, conflicts, choices you had to make yourself, status changes, and the lint result. Never list what went fine or summarize the changes applied as asked. If there is nothing to report, answer with the lint result alone.
 
 ## Rules (from `${CLAUDE_PLUGIN_ROOT}/method/AGENTS-METHOD.md`, always)
 
