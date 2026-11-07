@@ -57,6 +57,7 @@ The full workflow is in [`docs/GUIDE.md`](docs/GUIDE.md).
 | `/agentspec:req-audit` | skill | lists defects between the REQs of one module (report only) | before approving a module, or when it feels inconsistent |
 | `/agentspec:req-resolve` | skill | resolves `pending_refs` into `depends_on` IDs (explicit only) | when the session start protocol flags `pending_refs` |
 | `/agentspec:flow-new` | skill | turns a user journey into a `### FLOW-…` block pointing to REQs | when you describe a journey across several REQs |
+| `/agentspec:req-elicit` | skill | turns a loose idea into approved FLOWs and REQs: finds gaps and conflicts first, asks you only about those, delegates writing to `req-writer` and review to `req-reviewer`, audits, commits | when you have an idea or rough feature list to formalize |
 | `req-reviewer` | agent | reviews `draft` REQs, read-only | before promoting `draft → approved` |
 | `req-writer` | agent | writes decisions already taken with you into the REQs, never decides | during a design session, one message per decision batch |
 | `flow-coverage` | agent | matches flow steps against existing REQs, read-only | called by `flow-new`, or to ask which REQs a journey covers |

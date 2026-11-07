@@ -45,6 +45,7 @@ Before writing any code, in order:
 | `/agentspec:flow-new` | skill | turn an informal journey description into a `### FLOW-…` block |
 | `flow-coverage` | read-only subagent | match flow steps against existing REQs; returns a digest |
 | `/agentspec:req-new` | skill | generate a new REQ from an informal description |
+| `/agentspec:req-elicit` | skill | formalize a loose idea into approved FLOWs/REQs through human and reviewer rounds; writing delegated to `req-writer` |
 | `/agentspec:req-audit` | skill, Sonnet | audit ONE module for defects between REQs; report only |
 | `/agentspec:req-resolve` | skill, explicit invocation only | resolve `pending_refs` into `depends_on` |
 | `req-reviewer` | read-only subagent | review `draft` REQs: report only, no file or status changes |
